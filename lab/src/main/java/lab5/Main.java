@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.concurrent.CompletionStage;
 
 public class Main {
+    private static final int SERVER_PORT = 8080;
+
     public static void main(String[] args) throws IOException {
         System.out.println("start!");
         ActorSystem system = ActorSystem.create("routes");
@@ -23,7 +25,7 @@ public class Main {
         final Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = ; //<вызов метода которому передаем Http, ActorSystem и ActorMaterializer>;
         final CompletionStage<ServerBinding> binding = http.bindAndHandle(
                 routeFlow,
-                ConnectHttp.toHost("localhost", PORT),
+                ConnectHttp.toHost("localhost", SERVER_PORT),
                 materializer
         );
         System.out.println("Server online at http://localhost:8080/\nPress RETURN to stop...");
