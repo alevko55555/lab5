@@ -17,7 +17,4 @@ public class GetUrlTime {
     public Integer getNum() {
         return num;
     }
-    public Integer getTime(){
-        //return msg.getValue()
-    }
 }
