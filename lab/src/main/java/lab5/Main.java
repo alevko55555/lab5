@@ -14,6 +14,8 @@ import org.asynchttpclient.AsyncHttpClient;
 import java.io.IOException;
 import java.util.concurrent.CompletionStage;
 
+import static org.asynchttpclient.Dsl.asyncHttpClient;
+
 public class Main {
     private static final int SERVER_PORT = 8080;
 
