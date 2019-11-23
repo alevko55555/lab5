@@ -9,6 +9,7 @@ import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Flow;
+import org.asynchttpclient.AsyncHttpClient;
 
 import java.io.IOException;
 import java.util.concurrent.CompletionStage;
@@ -22,7 +23,9 @@ public class Main {
         final Http http = Http.get(system);
         final ActorMaterializer materializer =
                 ActorMaterializer.create(system);
-        final Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = ; //<вызов метода которому передаем Http, ActorSystem и ActorMaterializer>;
+        final AsyncHttpClient asyncHttpClient = asyncHttpClient();
+        final FlowWorkNode workNode = new FlowWorkNode(asyncHttpClient, system, materializer);
+        final Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = workNode.; //<вызов метода которому передаем Http, ActorSystem и ActorMaterializer>;
         final CompletionStage<ServerBinding> binding = http.bindAndHandle(
                 routeFlow,
                 ConnectHttp.toHost("localhost", SERVER_PORT),
