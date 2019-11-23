@@ -2,6 +2,7 @@ package lab5;
 
 import akka.NotUsed;
 import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.stream.ActorMaterializer;
@@ -10,10 +11,10 @@ import org.asynchttpclient.AsyncHttpClient;
 
 public class FlowWorkNode {
     private final AsyncHttpClient asyncHttpClient;
-    private final ActorRef storage;
+    private final ActorSystem storage;
     private final ActorMaterializer actorMaterializer;
 
-    public FlowWorkNode(AsyncHttpClient asyncHttpClient, ActorRef storage, ActorMaterializer actorMaterializer) {
+    public FlowWorkNode(AsyncHttpClient asyncHttpClient, ActorSystem storage, ActorMaterializer actorMaterializer) {
         this.asyncHttpClient = asyncHttpClient;
         this.storage = storage;
         this.actorMaterializer = actorMaterializer;
