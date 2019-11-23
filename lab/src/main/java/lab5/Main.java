@@ -25,7 +25,7 @@ public class Main {
                 ActorMaterializer.create(system);
         final AsyncHttpClient asyncHttpClient = asyncHttpClient();
         final FlowWorkNode workNode = new FlowWorkNode(asyncHttpClient, system, materializer);
-        final Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = workNode.; //<вызов метода которому передаем Http, ActorSystem и ActorMaterializer>;
+        final Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = workNode.createRoute(); //<вызов метода которому передаем Http, ActorSystem и ActorMaterializer>;
         final CompletionStage<ServerBinding> binding = http.bindAndHandle(
                 routeFlow,
                 ConnectHttp.toHost("localhost", SERVER_PORT),
