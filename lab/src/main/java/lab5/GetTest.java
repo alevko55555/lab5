@@ -2,10 +2,10 @@ package lab5;
 
 import javafx.util.Pair;
 
-public class GetMessage {
+public class GetTest {
     private final Pair<String, Integer> msgPair;
 
-    public GetMessage(Pair<String, Integer> pair) {
+    public GetTest(Pair<String, Integer> pair) {
         this.msgPair = pair;
     }
 
