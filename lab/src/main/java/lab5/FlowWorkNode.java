@@ -6,9 +6,13 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
+import akka.http.javadsl.model.Query;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Flow;
+import javafx.util.Pair;
 import org.asynchttpclient.AsyncHttpClient;
+
+import java.util.Optional;
 
 public class FlowWorkNode {
     private final AsyncHttpClient asyncHttpClient;
@@ -24,7 +28,13 @@ public class FlowWorkNode {
 
     public Flow<HttpRequest, HttpResponse, NotUsed> createRoute() {
         return Flow.of(HttpRequest.class)
-                .map()
+                .map(req -> {
+                    Query query = req.getUri().query();
+                    Optional<String> testUrl = query.get("testUrl");
+                    Optional<String> num = query.get("num");
+                    Pair<String, Integer> pair = Pair <testUrl.get(), Integer.parseInt(num.get())>;
+                    return new GetTest(Pair<testUrl.get(), Integer.parseInt(num.get())>);
+                })
                 .mapAsync()
                 .map();
     }
