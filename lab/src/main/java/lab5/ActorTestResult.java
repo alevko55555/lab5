@@ -1,6 +1,7 @@
 package lab5;
 
 import akka.actor.AbstractActor;
+import akka.actor.ActorRef;
 
 import java.util.HashMap;
 
@@ -15,7 +16,8 @@ public class ActorTestResult extends AbstractActor {
         return receiveBuilder()
                 .match(GetTest.class,
                         msg -> getSender().tell(
-                                new GetUrlTime(new )
-                        ));
+                                new MessageUrlTime(new GetUrlTime(msg, storage.get(msg))),
+                                ActorRef.noSender()
+                );
     }
 }
