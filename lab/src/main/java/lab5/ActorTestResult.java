@@ -15,7 +15,7 @@ public class ActorTestResult extends AbstractActor {
         return receiveBuilder()
                 .match(GetTest.class,
                         msg -> getSender().tell(
-                                new GetUrlTime()
+                                new GetUrlTime(new )
                         ));
     }
 }
