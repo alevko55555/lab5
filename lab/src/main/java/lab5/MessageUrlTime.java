@@ -1,5 +1,7 @@
 package lab5;
 
+import java.util.Optional;
+
 public class MessageUrlTime {
     private final GetUrlTime result;
 
@@ -8,6 +10,6 @@ public class MessageUrlTime {
     }
 
     public Optional<GetUrlTime> getUrlTimeOptional() {
-        if (result.)
+        if (result.getTest())
     }
 }
