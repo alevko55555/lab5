@@ -12,6 +12,10 @@ public class ActorTestResult extends AbstractActor {
 
     @Override
     public Receive createReceive() {
-        return null;
+        return receiveBuilder()
+                .match(GetTest.class,
+                        msg -> getSender().tell(
+                                new GetUrlTime()
+                        ));
     }
 }
