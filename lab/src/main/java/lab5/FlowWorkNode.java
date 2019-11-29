@@ -3,6 +3,7 @@ package lab5;
 import akka.NotUsed;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.Props;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.stream.ActorMaterializer;
@@ -17,7 +18,7 @@ public class FlowWorkNode {
 
     public FlowWorkNode(AsyncHttpClient asyncHttpClient, ActorSystem system, ActorMaterializer actorMaterializer) {
         this.asyncHttpClient = asyncHttpClient;
-        this.storage = system.actorOf(ActorTestResult);
+        this.storage = system.actorOf(Props.create(ActorTestResult.class));
         this.actorMaterializer = actorMaterializer;
     }
 
