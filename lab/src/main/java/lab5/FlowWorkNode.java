@@ -11,12 +11,13 @@ import org.asynchttpclient.AsyncHttpClient;
 
 public class FlowWorkNode {
     private final AsyncHttpClient asyncHttpClient;
-    private final ActorSystem system;
+    //private final ActorSystem system;
+    private final ActorRef storage;
     private final ActorMaterializer actorMaterializer;
 
     public FlowWorkNode(AsyncHttpClient asyncHttpClient, ActorSystem system, ActorMaterializer actorMaterializer) {
         this.asyncHttpClient = asyncHttpClient;
-        this.system = system;
+        this.storage = system.actorOf(ActorTestResult);
         this.actorMaterializer = actorMaterializer;
     }
 
