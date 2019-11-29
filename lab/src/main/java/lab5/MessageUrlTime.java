@@ -10,6 +10,10 @@ public class MessageUrlTime {
     }
 
     public Optional<GetUrlTime> getUrlTimeOptional() {
-        if (result.getTest())
+        if (result.getTest() != null) {
+            return Optional.of(result);
+        } else {
+            return Optional.empty();
+        }
     }
 }
