@@ -5,6 +5,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.http.javadsl.model.*;
+import akka.pattern.Patterns;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Flow;
 import akka.util.ByteString;
@@ -37,7 +38,7 @@ public class FlowWorkNode {
                     return new GetTest(pair);
                 })
                 .mapAsync(5, pair -> {
-                    
+                    return Patterns.ask(storage, pair, )
                 })
                 .map(httpresponse -> HttpResponse.create()
                         .withStatus(StatusCodes.OK)
