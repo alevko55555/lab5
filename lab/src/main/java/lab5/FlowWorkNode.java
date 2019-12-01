@@ -53,7 +53,7 @@ public class FlowWorkNode {
                             if(resOptional.isPresent()) {
                                 return CompletableFuture.completedFuture(resOptional.get());
                             } else {
-                                return (GetUrlTime)test -> {
+                                return test -> {
                                     final Sink<GetTest, CompletionStage<Integer>> testSink =
                                           Flow.of(GetTest.class)
                                                   .mapConcat(o -> Collections.nCopies(o.getNum(), o.getUrl()))
