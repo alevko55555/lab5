@@ -66,6 +66,7 @@ public class FlowWorkNode {
                                                           ));
                                                   })
                                                   .toMat(Sink.fold(0, Integer::sum), Keep.right());
+                                    
                                     return Source.from(Collections.singleton(test))
                                             .toMat(testSink, Keep.right())
                                             .run(actorMaterializer)
