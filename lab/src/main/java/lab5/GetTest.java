@@ -19,13 +19,13 @@ public class GetTest {
         return  msgPair.getValue();
     }
 
-    //@Override
-    public int compareTo(GetTest pair) {
-        final int comp = this.getUrl().compareTo(pair.getUrl());
-        if (comp != 0) {
-            return comp;
-        } else {
-            return this.getNum().compareTo(pair.getNum());
-        }
-    }
+//    //@Override
+//    public int compareTo(GetTest pair) {
+//        final int comp = this.getUrl().compareTo(pair.getUrl());
+//        if (comp != 0) {
+//            return comp;
+//        } else {
+//            return this.getNum().compareTo(pair.getNum());
+//        }
+//    }
 }
