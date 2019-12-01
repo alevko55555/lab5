@@ -39,23 +39,12 @@ public class FlowWorkNode {
 
     public Flow<HttpRequest, HttpResponse, NotUsed> createRoute() {
         return Flow.of(HttpRequest.class)
-                .map(req -> {
-                    String url = req.getUri().query().get("testUrl").orElse("");
-                    String count = req.getUri().query().get("count").orElse("");
-                    Integer countInt = Integer.parseInt(count);
-                    Pair<String, Integer> newReq = new Pair<>(url, countInt);
-                    Flow<Pair<String, Integer>, HttpResponse, NotUsed> testSink =
-                            Flow.<Pair<String, Integer>>create()
-                                    .map(pair -> new Pair<>(HttpRequest.create().withUri(pair.getKey()), pair.getValue()))
-                                    .mapAsync()
-                                    .map(result -> {
-                                        storage.tell(result, ActorRef.noSender());
-                                        return HttpResponse.create()
-                                                .withStatus(StatusCodes.OK)
-                                                .withEntity(ContentTypes.APPLICATION_JSON, ByteString.fromString(
-                                                        new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(result)
-                                                ));
-                                    })
-                })
+                .map(this::parseRequest)
+                .mapAsync(5, this::performTest)
+                .map(this::createResponse);
+    }
+
+    public GetTest parseRequest(HttpRequest request){
+                
     }
 }
