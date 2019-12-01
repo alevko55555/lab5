@@ -38,18 +38,15 @@ public class FlowWorkNode {
     }
 
     public Flow<HttpRequest, HttpResponse, NotUsed> createRoute() {
-        Flow<HttpRequest, HttpResponse, NotUsed> request = req -> {
+        Flow<HttpRequest, GetTest, NotUsed> request = Flow.of(HttpRequest.class).map(req -> {
             String url = req.getUri().query().get("testUrl").orElse("");
             String count = req.getUri().query().get("count").orElse("");
             Integer countInt = Integer.parseInt(count);
             Pair<String, Integer> pair = new Pair<>(url, countInt);
             return new GetTest(pair);
-        };
+        });
         return Flow.of(HttpRequest.class)
                 .map(req -> {
-                    String url = req.getUri().query().get("testUrl").orElse("");
-                    String count = req.getUri().query().get("count").orElse("");
-                    Integer countInt = Integer.parseInt(count);
                     Pair<String, Integer> pair = new Pair<>(url, countInt);
                     return new GetTest(pair);
                 })
