@@ -12,6 +12,7 @@ import akka.stream.javadsl.Keep;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.util.collection.IntObjectHashMap;
 import javafx.util.Pair;
@@ -52,5 +53,36 @@ public class FlowWorkNode {
         return new GetTest(pair);
     }
 
-    public CompletionStage<>
+    public CompletionStage<GetUrlTime> performTest(GetTest test){
+        return Patterns.ask(storage, test, Duration.ofSeconds(5))
+                .thenApply(o -> (MessageUrlTime)o)
+                .thenCompose(result -> runTest(test));
+    }
+
+    public CompletionStage<GetUrlTime> runTest(GetTest test){
+        Sink<GetTest, CompletionStage<Integer>> testSink = Flow.of(GetTest.class)
+                .mapConcat(o -> Collections.nCopies(o.getNum(), o.getUrl()))
+                .mapAsync(5, url -> {
+                    Instant start = Instant.now();
+                    return asyncHttpClient.prepareGet(url).execute()
+                            .toCompletableFuture()
+                            .thenCompose(msg -> CompletableFuture.completedFuture(
+                                    Duration.between(start, Instant.now()).getSeconds()
+                            ));
+                })
+                .toMat(Sink.fold(0, Integer::sum), Keep.right());
+        return Source.from(Collections.singleton(test))
+                .toMat(testSink, Keep.right())
+                .run(actorMaterializer)
+                .thenApply(sum -> new GetUrlTime(test, Integer.p(sum/test.getNum())));
+    }
+
+    public HttpResponse createResponse(GetUrlTime result) throws JsonProcessingException {
+        storage.tell(result, ActorRef.noSender());
+        return HttpResponse.create()
+                .withStatus(StatusCodes.OK)
+                .withEntity(ContentTypes.APPLICATION_JSON, ByteString.fromString(
+                        new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(result)
+                ));
+    }
 }
