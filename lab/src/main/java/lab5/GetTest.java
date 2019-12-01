@@ -3,22 +3,19 @@ package lab5;
 import javafx.util.Pair;
 
 public class GetTest {
-    //private final Pair<String, Integer> msgPair;
-    private final String url;
-    private final Integer num;
+    private final Pair<String, Integer> msgPair;
 
-    public GetTest(String url, Integer num) {
-        this.url = url;
-        this.num = num;
+    public GetTest(Pair<String, Integer> pair) {
+        this.msgPair = pair;
     }
 
-//    public Pair<String, Integer> getMsgPair(){
-//        return msgPair;
-//    }
+    public Pair<String, Integer> getMsgPair(){
+        return msgPair;
+    }
     public String getUrl() {
-        return  url;
+        return  msgPair.getKey();
     }
     public Integer getNum() {
-        return  num;
+        return  msgPair.getValue();
     }
 }

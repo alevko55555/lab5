@@ -30,10 +30,7 @@ public class FlowWorkNode {
     public Flow<HttpRequest, HttpResponse, NotUsed> createRoute() {
         return Flow.of(HttpRequest.class)
                 .map(req -> {
-                    Query query = req.getUri().query();
-                    Optional<String> testUrl = query.get("testUrl");
-                    Optional<String> count = query.get("count");
-                    return new GetTest(testUrl.get(), Integer.parseInt(count.get()));
+                    
                 })
                 .mapAsync()
                 .map(httpresponse -> HttpResponse.create()
