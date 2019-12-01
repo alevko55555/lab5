@@ -48,7 +48,14 @@ public class FlowWorkNode {
                             Flow.<Pair<String, Integer>>create()
                                     .map(pair -> new Pair<>(HttpRequest.create().withUri(pair.getKey()), pair.getValue()))
                                     .mapAsync()
-                                    .
+                                    .map(result -> {
+                                        storage.tell(result, ActorRef.noSender());
+                                        return HttpResponse.create()
+                                                .withStatus(StatusCodes.OK)
+                                                .withEntity(ContentTypes.APPLICATION_JSON, ByteString.fromString(
+                                                        new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(result)
+                                                ));
+                                    })
                 })
     }
 }
