@@ -14,6 +14,7 @@ import io.netty.util.collection.IntObjectHashMap;
 import javafx.util.Pair;
 import org.asynchttpclient.AsyncHttpClient;
 
+import java.time.Duration;
 import java.util.Optional;
 
 public class FlowWorkNode {
@@ -38,7 +39,8 @@ public class FlowWorkNode {
                     return new GetTest(pair);
                 })
                 .mapAsync(5, pair -> {
-                    return Patterns.ask(storage, pair, )
+                    return Patterns.ask(storage, pair, Duration.ofSeconds(5))
+                            .thenApply()
                 })
                 .map(httpresponse -> HttpResponse.create()
                         .withStatus(StatusCodes.OK)
