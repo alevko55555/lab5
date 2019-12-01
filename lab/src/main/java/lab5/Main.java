@@ -37,6 +37,13 @@ public class Main {
         System.in.read();
         binding
                 .thenCompose(ServerBinding::unbind)
-                .thenAccept(unbound -> system.terminate()); // and shutdown when done
+                .thenAccept(unbound -> {
+                    system.terminate();
+                    try {
+                        asyncHttpClient.close();
+                    } catch (IOException exception) {
+                        exception.printStackTrace();
+                    }
+                }); // and shutdown when done
     }
 }
