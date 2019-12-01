@@ -62,7 +62,7 @@ public class FlowWorkNode {
                                                       return asyncHttpClient.prepareGet(url).execute()
                                                               .toCompletableFuture()
                                                               .thenCompose(answer -> CompletableFuture.completedFuture(
-                                                                      Duration.between(Instant.now(), Instant.now()).getSeconds()
+                                                                      Duration.between(start, Instant.now()).getSeconds()
                                                           ));
                                                   })
                                                   .toMat(Sink.fold(0, Integer::sum), Keep.right());
