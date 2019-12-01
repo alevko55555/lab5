@@ -14,7 +14,7 @@ public class ActorTestResult extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(GetTest.class, this::createReceive)
+                .match(MessageUrlTime.class, this::createReceive)
                 .match(GetUrlTime.class,
                         msg -> storage.put(msg.getTest(), msg.getNum()))
                 .build();
