@@ -40,7 +40,11 @@ public class FlowWorkNode {
                 })
                 .mapAsync(5, pair -> {
                     return Patterns.ask(storage, pair, Duration.ofSeconds(5))
-                            .thenApply()
+                            .thenApply(o -> (MessageUrlTime)o)
+                            .thenCompose(res -> {
+                                Optional<GetUrlTime> resOptional = res.getUrlTimeOptional();
+                                
+                            })
                 })
                 .map(httpresponse -> HttpResponse.create()
                         .withStatus(StatusCodes.OK)
