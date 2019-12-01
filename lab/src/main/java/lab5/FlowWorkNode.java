@@ -60,7 +60,7 @@ public class FlowWorkNode {
     }
 
     public CompletionStage<GetUrlTime> runTest(GetTest test){
-        Sink<GetTest, CompletionStage<Integer>> testSink = Flow.of(GetTest.class)
+        Sink<GetTest, CompletionStage<Long>> testSink = Flow.of(GetTest.class)
                 .mapConcat(o -> Collections.nCopies(o.getNum(), o.getUrl()))
                 .mapAsync(5, url -> {
                     Instant start = Instant.now();
@@ -70,11 +70,11 @@ public class FlowWorkNode {
                                     Duration.between(start, Instant.now()).getSeconds()
                             ));
                 })
-                .toMat(Sink.fold(0, Integer::sum), Keep.right());
+                .toMat(Sink.fold(0L, Long::sum), Keep.right());
         return Source.from(Collections.singleton(test))
                 .toMat(testSink, Keep.right())
                 .run(actorMaterializer)
-                .thenApply(sum -> new GetUrlTime(test, Integer.p(sum/test.getNum())));
+                .thenApply(sum -> new GetUrlTime(test, (int) (sum/test.getNum())));
     }
 
     public HttpResponse createResponse(GetUrlTime result) throws JsonProcessingException {
