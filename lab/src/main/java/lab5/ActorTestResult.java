@@ -14,16 +14,16 @@ public class ActorTestResult extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(MessageUrlTime.class, this::createReceive)
+                .match(GetTest.class,
+                        msg -> {
+                    String url = msg.getUrl();
+                    int count = msg.getNum();
+                    getSender().tell(
+                                new GetTest(new GetUrlTime(msg, storage.get(msg))),
+                                ActorRef.noSender()
+                        );})
                 .match(GetUrlTime.class,
                         msg -> storage.put(msg.getTest(), msg.getNum()))
                 .build();
-    }
-
-    public void receiveTest(GetTest msg) {
-        getSender().tell(
-                new MessageUrlTime(new GetUrlTime(msg, storage.get(msg))),
-                ActorRef.noSender()
-        );
     }
 }
