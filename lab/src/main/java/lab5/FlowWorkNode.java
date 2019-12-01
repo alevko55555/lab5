@@ -16,6 +16,7 @@ import org.asynchttpclient.AsyncHttpClient;
 
 import java.time.Duration;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class FlowWorkNode {
     private final AsyncHttpClient asyncHttpClient;
@@ -43,8 +44,8 @@ public class FlowWorkNode {
                             .thenApply(o -> (MessageUrlTime)o)
                             .thenCompose(res -> {
                                 Optional<GetUrlTime> resOptional = res.getUrlTimeOptional();
-                                
-                            })
+                                return CompletableFuture.completedFuture(resOptional.get());
+                            });
                 })
                 .map(httpresponse -> HttpResponse.create()
                         .withStatus(StatusCodes.OK)
