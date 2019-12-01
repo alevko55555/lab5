@@ -32,8 +32,8 @@ public class FlowWorkNode {
                     Query query = req.getUri().query();
                     Optional<String> testUrl = query.get("testUrl");
                     Optional<String> num = query.get("num");
-                    Pair<String, Integer> pair = Pair <testUrl.get(), Integer.parseInt(num.get())>;
-                    return new GetTest(Pair<testUrl.get(), Integer.parseInt(num.get())>);
+                    Pair<String, Integer> pair = Pair <testUrl.get()>;
+                    return new GetTest(pair);
                 })
                 .mapAsync()
                 .map();
