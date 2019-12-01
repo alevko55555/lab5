@@ -8,7 +8,9 @@ import akka.http.javadsl.model.*;
 import akka.pattern.Patterns;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Flow;
+import akka.stream.javadsl.Keep;
 import akka.stream.javadsl.Sink;
+import akka.stream.javadsl.Source;
 import akka.util.ByteString;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.util.collection.IntObjectHashMap;
@@ -64,7 +66,11 @@ public class FlowWorkNode {
                                                                           Duration.between(Instant.now(), Instant.now()).getSeconds()
                                                               ));
                                                       })
-                                                      .toMat(Sink.fold(0, Integer))
+                                                      .toMat(Sink.fold(0, Integer::sum), Keep.right());
+                                        return Source.from(Collections.singleton(test))
+                                                .toMat(testSink, Keep.right())
+                                                .run(actorMaterializer)
+                                                .thenApply(sum -> new GetUrlTime(test, sum/test))
                                     }
                                 }
                             });
