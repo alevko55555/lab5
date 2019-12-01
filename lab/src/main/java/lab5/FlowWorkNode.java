@@ -46,35 +46,33 @@ public class FlowWorkNode {
                     Pair<String, Integer> pair = new Pair<>(url, countInt);
                     return new GetTest(pair);
                 })
-                .mapAsync(5, pair -> {
-                    return Patterns.ask(storage, pair, Duration.ofSeconds(5))
-                            .thenApply(o -> (MessageUrlTime)o)
-                            .thenCompose(res -> {
-                                Optional<GetUrlTime> resOptional = res.getUrlTimeOptional();
-                                if(resOptional.isPresent()) {
-                                    return CompletableFuture.completedFuture(resOptional.get());
-                                } else {
-                                    return test -> {
-                                        final Sink<GetTest, CompletionStage<Integer>> testSink =
-                                              Flow.of(GetTest.class)
-                                                      .mapConcat(o -> Collections.nCopies(o.getNum(), o.getUrl()))
-                                                      .mapAsync(5, url -> {
-                                                          Instant start = Instant.now();
-                                                          return asyncHttpClient.prepareGet(url).execute()
-                                                                  .toCompletableFuture()
-                                                                  .thenCompose(answer -> CompletableFuture.completedFuture(
-                                                                          Duration.between(Instant.now(), Instant.now()).getSeconds()
-                                                              ));
-                                                      })
-                                                      .toMat(Sink.fold(0, Integer::sum), Keep.right());
-                                        return Source.from(Collections.singleton(test))
-                                                .toMat(testSink, Keep.right())
-                                                .run(actorMaterializer)
-                                                .thenApply(sum -> new GetUrlTime(test, sum/));
-                                    }
+                .mapAsync(5, pair -> Patterns.ask(storage, pair, Duration.ofSeconds(5))
+                        .thenApply(o -> (MessageUrlTime)o)
+                        .thenCompose(res -> {
+                            Optional<GetUrlTime> resOptional = res.getUrlTimeOptional();
+                            if(resOptional.isPresent()) {
+                                return CompletableFuture.completedFuture(resOptional.get());
+                            } else {
+                                return test -> {
+                                    final Sink<GetTest, CompletionStage<Integer>> testSink =
+                                          Flow.of(GetTest.class)
+                                                  .mapConcat(o -> Collections.nCopies(o.getNum(), o.getUrl()))
+                                                  .mapAsync(5, url -> {
+                                                      Instant start = Instant.now();
+                                                      return asyncHttpClient.prepareGet(url).execute()
+                                                              .toCompletableFuture()
+                                                              .thenCompose(answer -> CompletableFuture.completedFuture(
+                                                                      Duration.between(Instant.now(), Instant.now()).getSeconds()
+                                                          ));
+                                                  })
+                                                  .toMat(Sink.fold(0, Integer::sum), Keep.right());
+                                    return Source.from(Collections.singleton(test))
+                                            .toMat(testSink, Keep.right())
+                                            .run(actorMaterializer)
+                                            .thenApply(sum -> new GetUrlTime(test, sum/));
                                 }
-                            });
-                })
+                            }
+                        }))
                 .map(httpresponse -> HttpResponse.create()
                         .withStatus(StatusCodes.OK)
                         .withEntity(ContentTypes.APPLICATION_JSON, ByteString.fromString(
