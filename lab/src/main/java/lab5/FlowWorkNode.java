@@ -16,6 +16,7 @@ import javafx.util.Pair;
 import org.asynchttpclient.AsyncHttpClient;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -55,9 +56,15 @@ public class FlowWorkNode {
                                         final Sink<GetTest, CompletionStage<Integer>> testSink =
                                               Flow.of(GetTest.class)
                                                       .mapConcat(o -> Collections.nCopies(o.getNum(), o.getUrl()))
-                                                      .mapAsync(5, url -> asyncHttpClient.prepareGet(url).execute()
-                                                              .toCompletableFuture()
-                                                              .thenCompose())
+                                                      .mapAsync(5, url -> {
+                                                          Instant start = Instant.now();
+                                                          return asyncHttpClient.prepareGet(url).execute()
+                                                                  .toCompletableFuture()
+                                                                  .thenCompose(answer -> CompletableFuture.completedFuture(
+                                                                          Duration.between(Instant.now(), Instant.now()).getSeconds()
+                                                              ));
+                                                      })
+                                                      .toMat(Sink.fold(0, Integer))
                                     }
                                 }
                             });
