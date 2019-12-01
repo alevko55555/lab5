@@ -4,11 +4,12 @@ import akka.NotUsed;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import akka.http.javadsl.model.HttpRequest;
-import akka.http.javadsl.model.HttpResponse;
-import akka.http.javadsl.model.Query;
+import akka.http.javadsl.model.*;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Flow;
+import akka.util.ByteString;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.util.collection.IntObjectHashMap;
 import javafx.util.Pair;
 import org.asynchttpclient.AsyncHttpClient;
 
@@ -32,9 +33,13 @@ public class FlowWorkNode {
                     Query query = req.getUri().query();
                     Optional<String> testUrl = query.get("testUrl");
                     Optional<String> count = query.get("count");
-                    return new GetTest(pair);
+                    return new GetTest(testUrl.get(), Integer.parseInt(count.get()));
                 })
                 .mapAsync()
-                .map();
+                .map(httpresponse -> HttpResponse.create()
+                        .withStatus(StatusCodes.OK)
+                        .withEntity(ContentTypes.APPLICATION_JSON, ByteString.fromString(
+                                new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(httpresponse)
+                        )));
     }
 }
