@@ -51,4 +51,6 @@ public class FlowWorkNode {
         Pair<String, Integer> pair = new Pair<>(url, countInt);
         return new GetTest(pair);
     }
+
+    public CompletionStage<>
 }
