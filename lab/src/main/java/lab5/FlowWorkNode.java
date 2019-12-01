@@ -38,6 +38,13 @@ public class FlowWorkNode {
     }
 
     public Flow<HttpRequest, HttpResponse, NotUsed> createRoute() {
+        Flow<HttpRequest, HttpResponse, NotUsed> request = req -> {
+            String url = req.getUri().query().get("testUrl").orElse("");
+            String count = req.getUri().query().get("count").orElse("");
+            Integer countInt = Integer.parseInt(count);
+            Pair<String, Integer> pair = new Pair<>(url, countInt);
+            return new GetTest(pair);
+        };
         return Flow.of(HttpRequest.class)
                 .map(req -> {
                     String url = req.getUri().query().get("testUrl").orElse("");
@@ -46,7 +53,8 @@ public class FlowWorkNode {
                     Pair<String, Integer> pair = new Pair<>(url, countInt);
                     return new GetTest(pair);
                 })
-                .mapAsync(5, pair -> Patterns.ask(storage, pair, Duration.ofSeconds(5))
+                .mapAsync(5, pair -> {
+                    Patterns.ask(storage, pair, Duration.ofSeconds(5))
                         .thenApply(o -> (MessageUrlTime)o)
                         .thenCompose(res -> {
                             Optional<GetUrlTime> resOptional = res.getUrlTimeOptional();
@@ -72,7 +80,7 @@ public class FlowWorkNode {
                                             .thenApply(sum -> new GetUrlTime(test, sum/));
                                 }
                             }
-                        }))
+                        });})
                 .map(httpresponse -> HttpResponse.create()
                         .withStatus(StatusCodes.OK)
                         .withEntity(ContentTypes.APPLICATION_JSON, ByteString.fromString(
