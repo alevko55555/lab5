@@ -39,46 +39,16 @@ public class FlowWorkNode {
 
     public Flow<HttpRequest, HttpResponse, NotUsed> createRoute() {
         return Flow.of(HttpRequest.class)
-                .map()
                 .map(req -> {
                     String url = req.getUri().query().get("testUrl").orElse("");
                     String count = req.getUri().query().get("count").orElse("");
                     Integer countInt = Integer.parseInt(count);
-                    Pair<String, Integer> pair = new Pair<>(url, countInt);
-                    return new GetTest(pair);
+                    Pair<String, Integer> newReq = new Pair<>(url, countInt);
+                    Flow<Pair<String, Integer>, HttpResponse, NotUsed> testSink =
+                            Flow.<Pair<String, Integer>>create()
+                                    .map(pair -> new Pair<>(HttpRequest.create().withUri(pair.getKey()), pair.getValue()))
+                                    .mapAsync()
+                                    .
                 })
-                .mapAsync(5, pair -> {
-                    Patterns.ask(storage, pair, Duration.ofSeconds(5))
-                        .thenApply(o -> (MessageUrlTime)o)
-                        .thenCompose(res -> {
-                            Optional<GetUrlTime> resOptional = res.getUrlTimeOptional();
-                            if(resOptional.isPresent()) {
-                                return CompletableFuture.completedFuture(resOptional.get());
-                            } else {
-                                return test -> {
-                                    final Sink<GetTest, CompletionStage<Integer>> testSink =
-                                          Flow.of(GetTest.class)
-                                                  .mapConcat(o -> Collections.nCopies(o.getNum(), o.getUrl()))
-                                                  .mapAsync(5, url -> {
-                                                      Instant start = Instant.now();
-                                                      return asyncHttpClient.prepareGet(url).execute()
-                                                              .toCompletableFuture()
-                                                              .thenCompose(answer -> CompletableFuture.completedFuture(
-                                                                      Duration.between(start, Instant.now()).getSeconds()
-                                                          ));
-                                                  })
-                                                  .toMat(Sink.fold(0, Integer::sum), Keep.right());
-                                    return Source.from(Collections.singleton(test))
-                                            .toMat(testSink, Keep.right())
-                                            .run(actorMaterializer)
-                                            .thenApply(sum -> new GetUrlTime(test, sum/));
-                                }
-                            }
-                        });})
-                .map(httpresponse -> HttpResponse.create()
-                        .withStatus(StatusCodes.OK)
-                        .withEntity(ContentTypes.APPLICATION_JSON, ByteString.fromString(
-                                new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(httpresponse)
-                        )));
     }
 }
