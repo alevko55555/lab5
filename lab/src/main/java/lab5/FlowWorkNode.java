@@ -45,6 +45,8 @@ public class FlowWorkNode {
     }
 
     public GetTest parseRequest(HttpRequest request){
-                
+        String url = request.getUri().query().get("testUrl").orElse("");
+        String count = request.getUri().query().get("count").orElse("");
+        Integer countInt = Integer.parseInt(count);
     }
 }
