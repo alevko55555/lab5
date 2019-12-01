@@ -66,6 +66,11 @@ public class FlowWorkNode {
                                                           ));
                                                   })
                                                   .toMat(Sink.fold(0, Integer::sum), Keep.right());
+                                    
+                                    String url = req.getUri().query().get("testUrl").orElse("");
+                                    String count = req.getUri().query().get("count").orElse("");
+                                    Integer countInt = Integer.parseInt(count);
+                                    Pair<String, Integer> pair = new Pair<>(url, countInt);
                                     return Source.from(Collections.singleton(test))
                                             .toMat(testSink, Keep.right())
                                             .run(actorMaterializer)
