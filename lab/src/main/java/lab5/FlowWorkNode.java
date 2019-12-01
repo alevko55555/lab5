@@ -36,7 +36,9 @@ public class FlowWorkNode {
                     Pair<String, Integer> pair = new Pair<>(url, countInt);
                     return new GetTest(pair);
                 })
-                .mapAsync(5, )
+                .mapAsync(5, pair -> {
+                    
+                })
                 .map(httpresponse -> HttpResponse.create()
                         .withStatus(StatusCodes.OK)
                         .withEntity(ContentTypes.APPLICATION_JSON, ByteString.fromString(
