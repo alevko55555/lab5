@@ -23,4 +23,11 @@ public class ActorTestResult extends AbstractActor {
                         msg -> storage.put(msg.getTest(), msg.getNum()))
                 .build();
     }
+
+    public receiveTest(GetTest msg) {
+        getSender().tell(
+                new MessageUrlTime(new MessageUrlTime(msg, storage.get(msg))),
+                ActorRef.noSender()
+        );
+    }
 }
