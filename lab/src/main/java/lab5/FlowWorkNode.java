@@ -70,7 +70,7 @@ public class FlowWorkNode {
                                         return Source.from(Collections.singleton(test))
                                                 .toMat(testSink, Keep.right())
                                                 .run(actorMaterializer)
-                                                .thenApply(sum -> new GetUrlTime(test, sum/))
+                                                .thenApply(sum -> new GetUrlTime(test, sum/));
                                     }
                                 }
                             });
