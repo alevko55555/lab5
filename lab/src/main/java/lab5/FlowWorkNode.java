@@ -8,6 +8,7 @@ import akka.http.javadsl.model.*;
 import akka.pattern.Patterns;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Flow;
+import akka.stream.javadsl.Sink;
 import akka.util.ByteString;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.util.collection.IntObjectHashMap;
@@ -15,8 +16,11 @@ import javafx.util.Pair;
 import org.asynchttpclient.AsyncHttpClient;
 
 import java.time.Duration;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class FlowWorkNode {
     private final AsyncHttpClient asyncHttpClient;
@@ -46,6 +50,15 @@ public class FlowWorkNode {
                                 Optional<GetUrlTime> resOptional = res.getUrlTimeOptional();
                                 if(resOptional.isPresent()) {
                                     return CompletableFuture.completedFuture(resOptional.get());
+                                } else {
+                                    return test -> {
+                                        final Sink<GetTest, CompletionStage<Integer>> testSink =
+                                              Flow.of(GetTest.class)
+                                                      .mapConcat(o -> Collections.nCopies(o.getNum(), o.getUrl()))
+                                                      .mapAsync(5, url -> asyncHttpClient.prepareGet(url).execute()
+                                                              .toCompletableFuture()
+                                                              .thenCompose())
+                                    }
                                 }
                             });
                 })
