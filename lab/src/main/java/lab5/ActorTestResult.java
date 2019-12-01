@@ -19,7 +19,7 @@ public class ActorTestResult extends AbstractActor {
                     String url = msg.getUrl();
                     int count = msg.getNum();
                     getSender().tell(
-                                new GetTest(new GetUrlTime(msg, storage.get(msg))),
+                                new MessageUrlTime(new GetUrlTime(msg, storage.get(msg))),
                                 ActorRef.noSender()
                         );})
                 .match(GetUrlTime.class,
