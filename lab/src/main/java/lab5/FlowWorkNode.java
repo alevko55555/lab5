@@ -44,6 +44,9 @@ public class FlowWorkNode {
                             .thenApply(o -> (MessageUrlTime)o)
                             .thenCompose(res -> {
                                 Optional<GetUrlTime> resOptional = res.getUrlTimeOptional();
+                                if(resOptional.isPresent()) {
+
+                                }
                                 return CompletableFuture.completedFuture(resOptional.get());
                             });
                 })
