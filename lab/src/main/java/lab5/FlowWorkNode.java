@@ -48,6 +48,7 @@ public class FlowWorkNode {
         String url = request.getUri().query().get("testUrl").orElse("");
         String count = request.getUri().query().get("count").orElse("");
         Integer countInt = Integer.parseInt(count);
-        return new GetTest()
+        Pair<String, Integer> pair = new Pair<>(url, countInt);
+        return new GetTest(pair);
     }
 }
