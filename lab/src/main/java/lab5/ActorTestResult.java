@@ -16,11 +16,10 @@ public class ActorTestResult extends AbstractActor {
         return receiveBuilder()
                 .match(GetTest.class,
                         msg -> {
-                    String url = msg.getUrl();
-                    int count = msg.getNum();
-                    GetUrlTime urlTime = new GetUrlTime(msg, storage.get(msg));
+                    //String url = msg.getUrl();
+                    //int count = msg.getNum();
                     getSender().tell(
-                                new MessageUrlTime(urlTime),
+                                new MessageUrlTime(new GetUrlTime(msg, storage.get(msg))),
                                 ActorRef.noSender()
                         );})
                 .match(GetUrlTime.class,
