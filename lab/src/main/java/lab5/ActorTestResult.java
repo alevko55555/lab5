@@ -13,13 +13,7 @@ public class ActorTestResult extends AbstractActor {
 
     @Override
     public Receive createReceive() {
-        return receiveBuilder().create()
-                .match(GetTest.class, msg -> {
-                    String url = msg.getUrl();
-                    int count = msg.getNum();
-                    if(storage.containsKey(url) && storage.get(url).)
-                })
-        /*return receiveBuilder()
+        return receiveBuilder()
                 .match(GetTest.class,
                         msg -> {
                     String url = msg.getUrl();
@@ -30,6 +24,6 @@ public class ActorTestResult extends AbstractActor {
                         );})
                 .match(GetUrlTime.class,
                         msg -> storage.put(msg.getTest(), msg.getNum()))
-                .build();*/
+                .build();
     }
 }
