@@ -29,7 +29,6 @@ public class FlowWorkNode {
         this.asyncHttpClient = asyncHttpClient;
         this.storage = system.actorOf(Props.create(ActorTestResult.class));
         this.actorMaterializer = actorMaterializer;
-        this.storage=st;
     }
 
     public Flow<HttpRequest, HttpResponse, NotUsed> createRoute() {
