@@ -61,11 +61,15 @@ public class Main {
                             storage,
                             new GetTest(new javafx.util.Pair<>(data.first(), data.second())),
                             Duration.ofMillis(3000)
-                            )+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.thenCompose(
+                            ).thenCompose(
                             response -> {
                                 if ((int) response != -1) {
                                     return CompletableFuture.completedFuture(response);
                                 }
+                                Sink<CompletionStage<Long>, CompletionStage<Integer>> fold = Sink.fold(0, (ac, el) -> {
+                                        int castEl = (int) (0 + el.toCompletableFuture().get());
+                                        return ac + castEl;
+                                    });
                                 return Source.from(Collections.singletonList(pair)).toMat(Flow.<Pair<HttpRequest, Integer>>create().mapConcat(cp -> Collections.nCopies(cp.second(), cp.first())).mapAsync(
                                         1, req2 -> CompletableFuture.supplyAsync(
                                                 () -> System.currentTimeMillis()
@@ -77,7 +81,7 @@ public class Main {
                                                             );
                                                             return responseServer;
                                                         })))
-                                        .toMat(workNode.getFold(), Keep.right()), Keep.right()).run(materializer);
+                                        .toMat(fold, Keep.right()), Keep.right()).run(materializer);
                             }).thenCompose(
                             sum -> {
                                 Patterns.ask(storage, new GetUrlTime(new javafx.util.Pair<String, javafx.util.Pair<Integer, Integer>>(data.first(), (new javafx.util.Pair<Integer, Integer>(data.second(), (int)sum)))), 5000);
