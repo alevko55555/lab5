@@ -45,7 +45,7 @@ public class FlowWorkNode {
                 .map(this::createResponse);
     }
 
-    public GetTest parseRequest(HttpRequest request){
+    private GetTest parseRequest(HttpRequest request){
         String url = request.getUri().query().get("testUrl").orElse("");
         String count = request.getUri().query().get("count").orElse("");
         Integer countInt = Integer.parseInt(count);
@@ -53,13 +53,13 @@ public class FlowWorkNode {
         return new GetTest(pair);
     }
 
-    public CompletionStage<GetUrlTime> performTest(GetTest test){
+    private CompletionStage<GetUrlTime> performTest(GetTest test){
         return Patterns.ask(storage, test, Duration.ofSeconds(5))
                 .thenApply(o -> (MessageUrlTime)o)
                 .thenCompose(result -> runTest(test));
     }
 
-    public CompletionStage<GetUrlTime> runTest(GetTest test){
+    private CompletionStage<GetUrlTime> runTest(GetTest test){
         Sink<GetTest, CompletionStage<Long>> testSink = Flow.of(GetTest.class)
                 .mapConcat(o -> Collections.nCopies(o.getNum(), o.getUrl()))
                 .mapAsync(5, url -> {
@@ -77,7 +77,7 @@ public class FlowWorkNode {
                 .thenApply(sum -> new GetUrlTime(test, (int) (sum/test.getNum())));
     }
 
-    public HttpResponse createResponse(GetUrlTime result) throws JsonProcessingException {
+    private HttpResponse createResponse(GetUrlTime result) throws JsonProcessingException {
         storage.tell(result, ActorRef.noSender());
         return HttpResponse.create()
                 .withStatus(StatusCodes.OK)
