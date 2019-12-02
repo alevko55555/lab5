@@ -15,7 +15,7 @@ import akka.util.ByteString;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.util.collection.IntObjectHashMap;
-import javafx.util.Pair;
+import akka.japi.Pair
 import org.asynchttpclient.AsyncHttpClient;
 
 import java.time.Duration;
@@ -39,50 +39,35 @@ public class FlowWorkNode {
     }
 
     public Flow<HttpRequest, HttpResponse, NotUsed> createRoute() {
-        return Flow.of(HttpRequest.class)
-                .map(this::parseRequest)
-                .mapAsync(5, this::performTest)
-                .map(this::createResponse);
-    }
+        return Flow.of(HttpRequest.class).map(
+                req -> {
+                    int countInt = new Integer(0);
+                    String url = req.getUri().query().get("testUrl").orElse("");
+                    String count = req.getUri().query().get("count").orElse("");
+                    try {
+                        countInt = Integer.parseInt(count);
+                    } catch (NumberFormatException e){
+                        System.out.println("Incorrect count value");
+                    }
+                    Pair<String, Integer> data = new Pair<>(url, countInt);
+                    Source<Pair<String, Integer>, NotUsed> source = Source.from(Collections.singletonList(data));
 
-    private GetTest parseRequest(HttpRequest request){
-        String url = request.getUri().query().get("testUrl").orElse("");
-        String count = request.getUri().query().get("count").orElse("");
-        Integer countInt = Integer.parseInt(count);
-        Pair<String, Integer> pair = new Pair<>(url, countInt);
-        return new GetTest(pair);
-    }
+                    Flow<Pair<String, Integer>, HttpResponse, NotUsed> testSink = Flow.<Pair<String, Integer>>create().map(
+                            pair -> new Pair<>(HttpRequest.create().withUri(pair.first()), pair.second())
+                    ).mapAsync(1, a -> Patterns.ask(
+                            actor,
+                            new GetTest(new javafx.util.Pair<>(data.first(), data.second())),
+                            Duration.ofMillis(3000)
+                    ).thenCompose(
+                            response -> {
+                                if ((int) response != -1){
+                                    return CompletableFuture.completedFuture((int) response);
+                                }
+                                return Source.from(Collections.singletonList())
+                            }
+                    ))
 
-    private CompletionStage<GetUrlTime> performTest(GetTest test){
-        return Patterns.ask(storage, test, Duration.ofSeconds(5))
-                .thenApply(o -> (MessageUrlTime)o)
-                .thenCompose(result -> runTest(test));
-    }
-
-    private CompletionStage<GetUrlTime> runTest(GetTest test){
-        Sink<GetTest, CompletionStage<Long>> testSink = Flow.of(GetTest.class)
-                .mapConcat(o -> Collections.nCopies(o.getNum(), o.getUrl()))
-                .mapAsync(5, url -> {
-                    Instant start = Instant.now();
-                    return asyncHttpClient.prepareGet(url).execute()
-                            .toCompletableFuture()
-                            .thenCompose(msg -> CompletableFuture.completedFuture(
-                                    Duration.between(start, Instant.now()).getSeconds()
-                            ));
-                })
-                .toMat(Sink.fold(0L, Long::sum), Keep.right());
-        return Source.from(Collections.singleton(test))
-                .toMat(testSink, Keep.right())
-                .run(actorMaterializer)
-                .thenApply(sum -> new GetUrlTime(test,  (sum/test.getNum())));
-    }
-
-    private HttpResponse createResponse(GetUrlTime result) throws JsonProcessingException {
-        storage.tell(result, ActorRef.noSender());
-        return HttpResponse.create()
-                .withStatus(StatusCodes.OK)
-                .withEntity(ContentTypes.APPLICATION_JSON, ByteString.fromString(
-                        new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(result)
-                ));
+                }
+        )
     }
 }
