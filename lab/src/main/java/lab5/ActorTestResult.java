@@ -29,7 +29,7 @@ public class ActorTestResult extends AbstractActor {
                         store = new HashMap<>();
                     }
                     store.put(test.getCount(), test.getTime());
-                    store.put(test.getUrl(), store);
+                    storage.put(test.getUrl(), store);
                 })
                 .build();
     }
