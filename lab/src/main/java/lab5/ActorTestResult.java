@@ -6,10 +6,7 @@ import akka.actor.ActorRef;
 import java.util.HashMap;
 
 public class ActorTestResult extends AbstractActor {
-    private HashMap<GetTest, Integer> storage;
-    public void TestStorage() {
-        this.storage = new HashMap<>();
-    }
+    private HashMap<GetTest, Long> storage = new HashMap<>();
 
     @Override
     public Receive createReceive() {

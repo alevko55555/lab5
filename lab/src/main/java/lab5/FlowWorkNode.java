@@ -74,7 +74,7 @@ public class FlowWorkNode {
         return Source.from(Collections.singleton(test))
                 .toMat(testSink, Keep.right())
                 .run(actorMaterializer)
-                .thenApply(sum -> new GetUrlTime(test, (int) (sum/test.getNum())));
+                .thenApply(sum -> new GetUrlTime(test,  (sum/test.getNum())));
     }
 
     private HttpResponse createResponse(GetUrlTime result) throws JsonProcessingException {
