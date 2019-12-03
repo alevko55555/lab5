@@ -53,7 +53,7 @@ public class FlowWorkNode {
 
                     Flow<Pair<String, Integer>, HttpResponse, NotUsed> testSink = Flow.<Pair<String, Integer>>create().map(
                             pair -> new Pair<>(HttpRequest.create().withUri(pair.first()), pair.second())
-                    ).mapAsync(1, pair -> Patterns.ask(
+                    ).mapAsync(5, pair -> Patterns.ask(
                             storage,
                             new GetTest(new javafx.util.Pair<>(data.first(), data.second())),
                             Duration.ofMillis(3000)
