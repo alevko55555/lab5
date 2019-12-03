@@ -18,6 +18,6 @@ public class GetUrlTime {
     }
 
     public Integer getTime() {
-        return pair.getValue().getKey();
+        return pair.getValue().getValue();
     }
 }
