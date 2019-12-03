@@ -56,7 +56,7 @@ public class FlowWorkNode {
                             Duration.ofMillis(3000)
                     ).thenCompose(
                             response -> {
-                                System.out.println("1213123jhfjfj12");
+                                System.out.println("1213123jhwerwqerqwwerfjfj12");
                                 if ((int) response != -1) {
                                     return CompletableFuture.completedFuture(response);
                                 }
