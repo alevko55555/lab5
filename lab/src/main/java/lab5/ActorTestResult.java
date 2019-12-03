@@ -16,6 +16,7 @@ public class ActorTestResult extends AbstractActor {
                     String url = test.getUrl();
                     Integer count = test.getNum();
                     if(storage.containsKey(url) && storage.get(url).containsKey(count)) {
+                        System.out.println("WE GOT THIS DATA ---" + url + "---" + count + ": " + storage.get(url).get(count));
                         getSender().tell(storage.get(url).get(count), ActorRef.noSender());
                     } else {
                         getSender().tell(-1, ActorRef.noSender());
