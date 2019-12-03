@@ -12,6 +12,7 @@ import akka.japi.Pair;
 import akka.util.ByteString;
 import org.asynchttpclient.AsyncHttpClient;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -31,7 +32,7 @@ public class FlowWorkNode {
         this.actorMaterializer = actorMaterializer;
     }
 
-    public Flow<HttpRequest, HttpResponse, NotUsed> createRoute() {
+    public Flow<HttpRequest, HttpResponse, NotUsed> createRoute() throws IOException {
         Flow<HttpRequest, HttpResponse, NotUsed> flow = Flow.of(HttpRequest.class).map(
                 req -> {
                     final int countInt;
@@ -56,7 +57,6 @@ public class FlowWorkNode {
                             Duration.ofMillis(3000)
                     ).thenCompose(
                             response -> {
-                                System.out.println("1213123jhwerwqerqwwerfjfj12");
                                 if ((int) response != -1) {
                                     return CompletableFuture.completedFuture(response);
                                 }
