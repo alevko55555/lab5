@@ -22,6 +22,7 @@ public class ActorTestResult extends AbstractActor {
                     }
                 })
                 .match(GetUrlTime.class, test -> {
+                    System.out.println("WE GOT A MESSAGE HERE!!!!" + test.getUrl().toString() + "---" + test.getCount().toString() + "---" + test.getTime());
                     Map<Integer, Integer> store;
                     if(storage.containsKey(test.getUrl())) {
                         store = storage.get(test.getUrl());
