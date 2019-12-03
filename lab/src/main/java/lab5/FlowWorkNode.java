@@ -59,7 +59,7 @@ public class FlowWorkNode {
                             Duration.ofMillis(3000)
                             ).thenCompose(
                             response -> {
-                                if ((int) response != 1){
+                                if ((int) response != -1){
                                     return CompletableFuture.completedFuture((int) response);
                                 }
                                 return returnSource(pair);
@@ -83,7 +83,7 @@ public class FlowWorkNode {
                 Flow.<Pair<HttpRequest, Integer>>create().mapConcat(p -> Collections.nCopies(p.second(), p.first()))
                         .mapAsync(
                                 1,
-                                req2 -> CompletableFuture.completedFuture(currentTimeMillis())
+                                req2 -> CompletableFuture.completedFuture(System.currentTimeMillis())
                                         .thenCompose(start ->
                                                 CompletableFuture.supplyAsync(
                                                         () -> {
@@ -91,7 +91,7 @@ public class FlowWorkNode {
                                                                     .prepareGet(req2.getUri().toString())
                                                                     .execute().toCompletableFuture()
                                                                     .thenCompose(
-                                                                            answer -> CompletableFuture.completedFuture(currentTimeMillis() - start));
+                                                                            answer -> CompletableFuture.completedFuture(System.currentTimeMillis() - start));
                                                             return whenResponse;
                                                         }
                                                 ))
